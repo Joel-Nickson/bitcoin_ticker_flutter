@@ -25,6 +25,7 @@ class _PriceScreenState extends State<PriceScreen> {
         //TODO 2: Call getData() when the picker/dropdown changes.
         setState(() {
           selectedCurrency = currenciesList[s];
+          getData(selectedCurrency);
         });
       },
       children: pickerItems,
@@ -51,6 +52,7 @@ class _PriceScreenState extends State<PriceScreen> {
           //TODO 2: Call getData() when the picker/dropdown changes.
           () {
             selectedCurrency = value.toString();
+            getData(selectedCurrency);
           },
         );
       },
@@ -59,9 +61,9 @@ class _PriceScreenState extends State<PriceScreen> {
 
   String bitcoinValue = '?';
 
-  void getData() async {
+  void getData(selectedCurrency) async {
     try {
-      double data = await CoinData().getCoinData();
+      double data = await CoinData().getCoinData(selectedCurrency);
       setState(() {
         bitcoinValue = data.toStringAsFixed(0);
       });
@@ -73,7 +75,7 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   void initState() {
     super.initState();
-    getData();
+    getData(selectedCurrency);
   }
 
   Widget getPicker() {
