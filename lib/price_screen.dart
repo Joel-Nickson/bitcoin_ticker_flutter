@@ -9,6 +9,7 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
+  //TODO 6: Update the default currency to AUD, the first item in the currencyList.
   String selectedCurrency = 'USD';
 
   CupertinoPicker iOSPicker() {
@@ -20,6 +21,8 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
       itemExtent: 32.0,
       onSelectedItemChanged: (s) {
+        //TODO 1: Save the selected currency to the property selectedCurrency
+        //TODO 2: Call getData() when the picker/dropdown changes.
         setState(() {
           selectedCurrency = currenciesList[s];
         });
@@ -45,12 +48,32 @@ class _PriceScreenState extends State<PriceScreen> {
       icon: const Icon(Icons.keyboard_arrow_down),
       onChanged: (dynamic value) {
         setState(
+          //TODO 2: Call getData() when the picker/dropdown changes.
           () {
             selectedCurrency = value.toString();
           },
         );
       },
     );
+  }
+
+  String bitcoinValue = '?';
+
+  void getData() async {
+    try {
+      double data = await CoinData().getCoinData();
+      setState(() {
+        bitcoinValue = data.toStringAsFixed(0);
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
   }
 
   Widget getPicker() {
@@ -81,7 +104,8 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = ? $selectedCurrency',
+                  //TODO 5: Update the currency name depending on the selectedCurrency.
+                  '1 BTC = $bitcoinValue $selectedCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
@@ -92,11 +116,12 @@ class _PriceScreenState extends State<PriceScreen> {
             ),
           ),
           Container(
-              height: 150.0,
-              alignment: Alignment.center,
-              padding: EdgeInsets.only(bottom: 30.0),
-              color: Colors.lightBlue,
-              child: Platform.isIOS ? iOSPicker() : androidDropDown()),
+            height: 150.0,
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(bottom: 30.0),
+            color: Colors.lightBlue,
+            child: Platform.isIOS ? iOSPicker() : androidDropDown(),
+          ),
         ],
       ),
     );
