@@ -9,28 +9,30 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  //TODO 6: Update the default currency to AUD, the first item in the currencyList.
   String selectedCurrency = 'USD';
+  String selectedCrypto = 'BTC';
+  // String cryptoCoinValue = '?';
+  String bitCoinValue = '?';
+  String ethCoinValue = '?';
+  String ltcCoinValue = '?';
 
-  CupertinoPicker iOSPicker() {
-    List<Text> pickerItems = [];
-    for (String currency in currenciesList) {
-      pickerItems.add(Text(currency));
-    }
+  // CupertinoPicker iOSPicker() {
+  //   List<Text> pickerItems = [];
+  //   for (String currency in currenciesList) {
+  //     pickerItems.add(Text(currency));
+  //   }
 
-    return CupertinoPicker(
-      itemExtent: 32.0,
-      onSelectedItemChanged: (s) {
-        //TODO 1: Save the selected currency to the property selectedCurrency
-        //TODO 2: Call getData() when the picker/dropdown changes.
-        setState(() {
-          selectedCurrency = currenciesList[s];
-          getData(selectedCurrency);
-        });
-      },
-      children: pickerItems,
-    );
-  }
+  //   return CupertinoPicker(
+  //     itemExtent: 32.0,
+  //     onSelectedItemChanged: (s) {
+  //       setState(() {
+  //         selectedCurrency = currenciesList[s];
+  //         getData(selectedCurrency);
+  //       });
+  //     },
+  //     children: pickerItems,
+  //   );
+  // }
 
   DropdownButton<String> androidDropDown() {
     List<DropdownMenuItem<String>> dropDownItems = [];
@@ -49,7 +51,6 @@ class _PriceScreenState extends State<PriceScreen> {
       icon: const Icon(Icons.keyboard_arrow_down),
       onChanged: (dynamic value) {
         setState(
-          //TODO 2: Call getData() when the picker/dropdown changes.
           () {
             selectedCurrency = value.toString();
             getData(selectedCurrency);
@@ -59,13 +60,18 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  String bitcoinValue = '?';
-
   void getData(selectedCurrency) async {
     try {
-      double data = await CoinData().getCoinData(selectedCurrency);
+      double bitCoinData =
+          await CoinData().getCoinData(selectedCurrency, 'BTC');
+      double ethCoinData =
+          await CoinData().getCoinData(selectedCurrency, 'ETH');
+      double ltcCoinData =
+          await CoinData().getCoinData(selectedCurrency, 'LTC');
       setState(() {
-        bitcoinValue = data.toStringAsFixed(0);
+        bitCoinValue = bitCoinData.toStringAsFixed(0);
+        ethCoinValue = ethCoinData.toStringAsFixed(0);
+        ltcCoinValue = ltcCoinData.toStringAsFixed(0);
       });
     } catch (e) {
       print(e);
@@ -78,11 +84,25 @@ class _PriceScreenState extends State<PriceScreen> {
     getData(selectedCurrency);
   }
 
-  Widget getPicker() {
-    if (Platform.isIOS) {
-      return iOSPicker();
-    }
-    return androidDropDown();
+  Widget CryptoUI(selectedCrypto, cryptoCoinValue) {
+    return Card(
+      color: Colors.lightBlueAccent,
+      elevation: 5.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+        child: Text(
+          '1 $selectedCrypto = $cryptoCoinValue $selectedCurrency',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 20.0,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -97,24 +117,13 @@ class _PriceScreenState extends State<PriceScreen> {
         children: <Widget>[
           Padding(
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  //TODO 5: Update the currency name depending on the selectedCurrency.
-                  '1 BTC = $bitcoinValue $selectedCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CryptoUI('BTC', bitCoinValue),
+                CryptoUI('ETH', ethCoinValue),
+                CryptoUI('LTC', ltcCoinValue),
+              ],
             ),
           ),
           Container(
@@ -122,7 +131,7 @@ class _PriceScreenState extends State<PriceScreen> {
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child: Platform.isIOS ? iOSPicker() : androidDropDown(),
+            child: androidDropDown(),
           ),
         ],
       ),
