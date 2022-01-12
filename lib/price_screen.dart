@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import '/coin_data.dart';
-import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -61,13 +59,15 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
   void getData(selectedCurrency) async {
+    double bitCoinData, ethCoinData, ltcCoinData;
     try {
-      double bitCoinData =
-          await CoinData().getCoinData(selectedCurrency, 'BTC');
-      double ethCoinData =
-          await CoinData().getCoinData(selectedCurrency, 'ETH');
-      double ltcCoinData =
-          await CoinData().getCoinData(selectedCurrency, 'LTC');
+      bitCoinData =
+          await CoinData().getCoinData(selectedCurrency, cryptoList[0]);
+      ethCoinData =
+          await CoinData().getCoinData(selectedCurrency, cryptoList[1]);
+      ltcCoinData =
+          await CoinData().getCoinData(selectedCurrency, cryptoList[2]);
+
       setState(() {
         bitCoinValue = bitCoinData.toStringAsFixed(0);
         ethCoinValue = ethCoinData.toStringAsFixed(0);
@@ -120,9 +120,9 @@ class _PriceScreenState extends State<PriceScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CryptoUI('BTC', bitCoinValue),
-                CryptoUI('ETH', ethCoinValue),
-                CryptoUI('LTC', ltcCoinValue),
+                CryptoUI(cryptoList[0], bitCoinValue),
+                CryptoUI(cryptoList[1], ethCoinValue),
+                CryptoUI(cryptoList[2], ltcCoinValue),
               ],
             ),
           ),
